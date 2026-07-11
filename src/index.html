@@ -1,0 +1,765 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="description" content="Mind vs Coin - A strategic 3-5-7 coin game with local and AI gameplay. Test your brain against the bot!">
+  <meta name="keywords" content="Mind vs Coin, Coin Game, 3-5-7 game, AI coin game, strategic coin game, puzzle game, logic game, play vs bot">
+  <meta name="Prasenjit Sasmal" content="Prasenjit Sasmal">
+  <meta property="og:title" content="Mind vs Coin - Beat the Bot or Friend!">
+  <meta property="og:description" content="Play the classic 3-5-7 coin game with AI or local multiplayer. Fun, logic, and strategy await!">
+  <meta property="og:image" content="https://yourdomain.com/preview.jpg"> <!-- (Optional: social media preview image) -->
+  <meta property="og:url" content="https://yourdomain.com">
+  <meta name="robots" content="index, follow">
+  <link rel="canonical" href="https://yourdomain.com">
+  <title>Mind vs Coin</title>
+  <script src="https://kit.fontawesome.com/2f062d4c16.js" crossorigin="anonymous"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      background: #000000af;
+      margin: 0;
+      padding: 0;
+      text-align: center;
+    }
+    #logo{
+      margin-top: 50px;
+      margin-bottom: 0;
+    }
+    /* #modeSelect, #difficultySelect {
+      margin-top: 10px;
+    } */
+
+    .selection-panel1 {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      gap: 20px;
+      padding-top: 0;
+    }
+    .selection-panel {
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      gap: 20px;
+      padding-top: 150px;
+    }
+
+    .selection-collon {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      align-content: center;
+      gap: 20px;
+      padding-top: 150px;
+    }
+
+    button {
+      padding: 10px 20px;
+      font-size: 18px;
+      cursor: pointer;
+      border-radius: 10px;
+      border: none;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+
+    #restartBtn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      background: #ff1c15;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    #backBtn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      background: #1d1d1d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    #back2Btn {
+      position: absolute;
+      top: 20px;
+      right: 20px;
+      padding: 8px 16px;
+      background: #1d1d1d;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+      z-index: 10;
+    }
+
+    #game {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      gap: 40px;
+      margin: 0;
+    }
+
+    .box {
+      border-radius: 50%;
+      background: #ddd;
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      align-content: center;
+      box-shadow: 0 0 8px #aaa;
+      padding: 10px;
+    }
+
+    .box[data-box="0"] { width: 100px; height: 100px; }
+    .box[data-box="1"] { width: 130px; height: 130px; }
+    .box[data-box="2"] { width: 160px; height: 160px; }
+
+    .coin {
+      width: 24px;
+      height: 24px;
+      margin: 4px;
+      border-radius: 50%;
+      background: gold;
+      border: 1px solid #999;
+      cursor: pointer;
+      transition: transform 0.3s, opacity 0.3s;
+    }
+
+    .coin.selected {
+      transform: scale(1.3);
+      box-shadow: 0 0 5px #ff9800;
+    }
+
+    .player-icons {
+      margin-top: 8px;
+      display: flex;
+      justify-content: center;
+      gap: 290px;
+    }
+
+    .player-icon {
+      font-size: 32px;
+      padding: 12px;
+      border-radius: 50%;
+      background: #ccc;
+      color: white;
+      transition: 0.3s;
+    }
+
+    .player-icon.active {
+      background: #7e7e7e;
+      box-shadow: 0 0 20px #000000;
+    }
+    
+
+    #takeBtn {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 8px;
+      border: none;
+      cursor: pointer;
+      transition: background 0.3s;
+    }
+    #takeBtn.valid {
+      background: #4caf50;
+      color: white;
+    }
+
+    #takeBtn.invalid {
+      background: #f44336;
+      color: white;
+    }
+    .winner {
+      animation: glow 1s infinite alternate;
+    }
+    @keyframes glow {
+      from { box-shadow: 0 0 8px #4caf50; }
+      to { box-shadow: 0 0 20px #4caf50; }
+    }
+    #winModal {
+      position: fixed;
+      top: -150%;
+      height: 100%;
+      left: 0;
+      right: 0;
+      background: rgba(0,0,0,0.9);
+      color: white;
+      padding: 40px 20px;
+      text-align: center;
+      transition: top 0.5s;
+      z-index: 100;
+      justify-content: center;
+      align-content: center;
+    }
+
+    #winModal.show {
+      top: 0;
+    }
+    #winModal i {
+      font-size: 40px;
+      margin-bottom: 10px;
+    }
+    #winModal button {
+      margin-top: 20px;
+      padding: 10px 20px;
+      background: #7df572;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+    }
+  .marquee-wrapper {
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+  height: 30px;
+  padding-top: 100px;
+}
+
+.marquee-text {
+  display: inline-block;
+  white-space: nowrap;
+  padding-left: 100%;
+  animation: marquee 5s linear infinite alternate;
+  font-size: 20px;
+  color: #fff;
+}
+
+@keyframes marquee {
+  0% { transform: translateX(0%); }
+  100% { transform: translateX(-100%); }
+}
+.player-icon {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  object-fit: cover;
+}
+.mind{
+  color: #2adf33;
+}
+.vs{
+  color: #ffffff;
+}
+.cointxt{
+  color: gold;
+}
+.underline{
+  border-style: dashed;
+  border-width: 2px;
+  border-image: repeating-linear-gradient(to right, white 0, white 10px, transparent 8px, transparent 20px) 1;
+  width: 202px;
+}
+.comment{
+  display: none;
+  position: fixed;
+  bottom: 110px;
+  left: 50%;
+  transform: translateX(-50%);
+  /* background: #222; */
+  color: #fff;
+  padding: 10px 20px;
+  /* border-radius: 10px; */
+  font-size: 18px;
+  z-index: 1000;
+  /* box-shadow: 0 0 10px #000; */
+  transition: opacity 0.5s ease;
+}
+.mute{
+  position: absolute; 
+  top: 20px; 
+  left: 20px;
+  font-size: 20px; 
+  background: rgb(136, 136, 136); 
+  border: none; 
+  color: white;
+  cursor: pointer;
+  padding: 5px 10px;
+}
+  </style>
+</head>
+<body>
+  <button id="soundToggle" class="mute">
+  🔊
+</button>
+
+<h1 id="logo"><span class="mind">Mind</span><span class="vs"> VS </span><span class="cointxt">Coin</span></h1>
+<hr id="line" class="underline">
+  <div id="modeSelect" class="selection-collon">
+    <!-- <h2><span class="mind">Mind</span><span class="vs"> VS </span><span class="cointxt">Coin</span></h2> -->
+    <div class="selection-panel1">
+        <button onclick="selectMode('local')">🎮 Local 2 Player</button>
+        <button onclick="showDifficulty()">🤖 Play With Bot</button>
+    </div>
+    <!-- <button onclick="roomSelect()">🌐 Play Online</button> -->
+  </div>
+
+  <div id="roomSelect" class="selection-collon" style="display:none;">
+    <div class="marquee-wrapper">
+      <div class="marquee-text">Coming Soon</div>
+    </div>
+
+    <div style="display:none;">
+      <div class="selection-panel1">
+          <button onclick="">Create Room</button>
+          <button onclick="">Join Room</button>
+      </div>
+      <button onclick="">Random Player</button>
+    </div>
+  </div>
+
+  <div id="difficultySelect" class="selection-panel" style="display:none;">
+    <!-- <h2>Select AI Difficulty</h2> -->
+    <button onclick="selectMode('ai', 'easy')">Easy😊</button>
+    <button onclick="selectMode('ai', 'medium')">Medium😎</button>
+    <button onclick="selectMode('ai', 'hard')">Hard😈</button>
+  </div>
+
+  <button id="backBtn" onclick="reestart()" style="display:none;">Back</button>
+
+  <div id="firstPlayerSelect" class="selection-panel" style="display:none;">
+  <button onclick="startGameAs(1)">🙋‍♂️ I'll play first</button>
+  <button onclick="startGameAs(2)">🤖 Let AI start</button>
+  </div>
+  <button id="back2Btn" onclick="showDifficulty()" style="display:none;">Back</button>
+
+  <button id="restartBtn" onclick="confirmRestart()" style="display:none;">Restart</button>
+  <div id="turnIndicator" style="color: white; font-size: 20px; margin-top: 0px;"></div>
+  <div id="game" style="display:none;">
+    <div class="box" data-box="0"></div>
+    <div class="box" data-box="1"></div>
+    <div class="box" data-box="2"></div>
+  </div>
+<div id="aiCommentary" class="comment" ></div>
+
+  
+
+  <div id="icons" class="player-icons" style="display:none;">
+    <div>
+      <div><img src="user.jpg" alt="Player" id="player1Icon" class="player-icon active"></div>
+      <div>Player 1</div>
+    </div>
+    <div>
+      <div><img src="user.jpg" alt="Player" id="player2Icon" class="player-icon"></i></div>
+      <div>Player 2</div>
+    </div>
+  </div>
+  <div class="controls">
+    <button id="takeBtn" onclick="takeCoins()" class="invalid" style="display:none;">Take</button>
+  </div>
+
+  <div id="winModal">
+    <img src="user.jpg" alt="Player"  class="player-icon">
+    <div id="winText"></div>
+    <button onclick="restart()">Play Again</button>
+  </div>
+
+  <audio id="takeSound" src="WhatsApp Audio 2025-07-28 at 7.29.15 PM.mpeg"></audio>
+  <audio id="winSound" src="WhatsApp Audio 2025-07-28 at 7.33.30 PM.mpeg"></audio>
+  <audio id="loseSound" src="WhatsApp Audio 2025-07-28 at 7.31.01 PM.mpeg"></audio>
+  <audio id="startSound" src="WhatsApp Audio 2025-07-28 at 7.30.13 PM.mpeg"></audio>
+  <audio id="clickSound" src="WhatsApp Audio 2025-07-28 at 9.12.21 PM.mpeg"></audio>
+  <script>
+    let boxes = [3, 5, 7];
+    let currentPlayer = 1;
+    let gameOver = false;
+    let mode = "local";
+    let aiLevel = "easy";
+    let hasAnyMoveHappened = false;
+    let isMuted = false;
+    document.getElementById("soundToggle").addEventListener("click", () => {
+  isMuted = !isMuted;
+  document.getElementById("soundToggle").textContent = isMuted ? "🔇" : "🔊";
+});
+
+    const winningPatterns = [
+      [2, 5, 7], [3, 4, 7], [3, 5, 6], [2, 4, 6], [1, 5, 4], [3, 2, 1], [1, 1, 1], [0, 5, 5], [0, 4, 4], [0, 3, 3], [0, 2, 2], [0, 0, 1]
+    ];
+
+    function arraysEqual(a, b) {
+      a = [...a].sort((x,y)=>x-y);
+      b = [...b].sort((x,y)=>x-y);
+      return JSON.stringify(a) === JSON.stringify(b);
+    }
+
+    function showDifficulty() {
+      playSound("clickSound");
+      document.getElementById("clickSound").play();
+      document.getElementById("back2Btn").style.display = "none";
+      document.getElementById("modeSelect").style.display = "none";
+      document.getElementById("firstPlayerSelect").style.display = "none";
+      document.getElementById("difficultySelect").style.display = "flex";
+      document.getElementById("backBtn").style.display = "block";
+    }
+
+    function roomSelect() {
+      document.getElementById("back2Btn").style.display = "none";
+      document.getElementById("modeSelect").style.display = "none";
+      document.getElementById("firstPlayerSelect").style.display = "none";
+      document.getElementById("difficultySelect").style.display = "none";
+      document.getElementById("roomSelect").style.display = "flex";
+      document.getElementById("backBtn").style.display = "block";
+    }
+
+    function selectMode(selectedMode, difficulty = "easy") {
+      
+      mode = selectedMode;
+      aiLevel = difficulty;
+
+      document.getElementById("modeSelect").style.display = "none";
+      document.getElementById("difficultySelect").style.display = "none";
+
+      if (selectedMode === "ai") {
+        playSound("clickSound");
+        document.getElementById("firstPlayerSelect").style.display = "flex";
+        document.getElementById("back2Btn").style.display = "block";
+      } else {
+        startGameAs(1);
+      }
+    }
+
+    function startGameAs(startingPlayer) {
+      currentPlayer = startingPlayer;
+      playSound("startSound");
+      document.getElementById("logo").style.marginTop = "10px";
+      document.getElementById("logo").style.fontSize = "15px";
+      document.getElementById("line").style.width = "100px";
+      document.getElementById("firstPlayerSelect").style.display = "none";
+      document.getElementById("game").style.display = "flex";
+      document.getElementById("restartBtn").style.display = "block";
+      document.getElementById("icons").style.display = "flex";
+      if (mode === "ai") {
+          document.querySelector("#icons div:nth-child(1) div:last-child").textContent = "You";
+          document.querySelector("#icons div:nth-child(2) div:last-child").textContent = "Bot";
+      } else {
+          document.querySelector("#icons div:nth-child(1) div:last-child").textContent = "Player 1";
+          document.querySelector("#icons div:nth-child(2) div:last-child").textContent = "Player 2";
+      }
+      document.getElementById("takeBtn").style.display = "inline-block";
+      renderBoxes();
+
+      if (mode === "ai" && currentPlayer === 2) {
+        setTimeout(aiMove, 800);
+      }
+      updateTurnIndicator();
+    }
+
+
+    function renderBoxes() {
+      document.querySelectorAll(".box").forEach((boxElem, index) => {
+        boxElem.innerHTML = '';
+        for (let i = 0; i < boxes[index]; i++) {
+          const coin = document.createElement("div");
+          coin.classList.add("coin");
+          coin.dataset.index = index;
+          coin.dataset.coin = i;
+          coin.onclick = () => {
+            if (gameOver) return;
+            coin.classList.toggle("selected");
+            validateSelection();
+          };
+          boxElem.appendChild(coin);
+        }
+      });
+      document.getElementById("player1Icon").classList.toggle("active", currentPlayer === 1);
+      document.getElementById("player2Icon").classList.toggle("active", currentPlayer === 2);
+      updateTurnIndicator();
+    }
+
+    function validateSelection() {
+      const selected = document.querySelectorAll(".coin.selected");
+      const takeBtn = document.getElementById("takeBtn");
+
+      if (selected.length === 0) {
+        takeBtn.className = "invalid";
+        return false;
+      }
+
+      const boxIndex = selected[0].dataset.index;
+      for (let coin of selected) {
+        if (coin.dataset.index !== boxIndex) {
+          takeBtn.className = "invalid";
+          return false;
+        }
+      }
+
+      takeBtn.className = "valid";
+      return true;
+    }
+
+    function takeCoins() {
+      if (gameOver) return;
+
+      const selected = document.querySelectorAll(".coin.selected");
+      if (selected.length === 0) {
+        alert("Please select at least one coin.");
+        return;
+      }
+
+      const boxIndex = selected[0].dataset.index;
+      for (let coin of selected) {
+        if (coin.dataset.index !== boxIndex) {
+          alert("You must select coins from a single box.");
+          return;
+        }
+      }
+
+      const boxNum = parseInt(boxIndex);
+      boxes[boxNum] -= selected.length;
+      if (boxes[boxNum] < 0) boxes[boxNum] = 0;
+          playSound("takeSound");
+      selected.forEach(coin => {
+        coin.style.opacity = "0";
+        coin.style.transform = "scale(0)";
+      });
+        hasAnyMoveHappened = true;
+        document.getElementById("aiCommentary").style.display = "block";
+        setTimeout(() => {
+        currentPlayer = 3 - currentPlayer;
+
+        if (mode === "ai" && currentPlayer === 2) {
+          document.getElementById("takeBtn").style.display = "none";
+          renderBoxes();
+          validateSelection();
+          setTimeout(aiMove, 800);
+          return;
+        }
+
+        const total = boxes.reduce((a, b) => a + b, 0);
+        if (total === 1) {
+          gameOver = true;
+          document.getElementById("aiCommentary").style.display = "none";
+          showWinner(currentPlayer);
+          launchFireworks();
+          return;
+        }
+        if (total === 0) {
+          gameOver = true;
+          document.getElementById("aiCommentary").style.display = "none";
+          showWinner(3 - currentPlayer);
+          launchFireworks();
+          return;
+        }
+        renderBoxes();
+        validateSelection();
+      }, 300);
+
+    }
+function playSound(id) {
+  if (!isMuted) {
+    const sound = document.getElementById(id);
+    if (sound) {
+      sound.currentTime = 0;
+      sound.play();
+    }
+  }
+}
+
+  function aiMove() {
+  if (gameOver) return;
+  if (hasAnyMoveHappened) {
+    showAICommentary();
+  }
+  const nonEmpty = boxes.map((val, i) => val > 0 ? i : -1).filter(i => i !== -1);
+
+  let effectiveLevel = aiLevel;
+  if (aiLevel === "medium") {
+    effectiveLevel = Math.random() < 0.2 ? "hard" : "easy";
+  }
+
+  let box = nonEmpty[Math.floor(Math.random() * nonEmpty.length)];
+  let removeCount = 1;
+
+  if (effectiveLevel === "hard") {
+    let moved = false;
+    for (let i = 0; i < 3; i++) {
+      for (let remove = 1; remove <= boxes[i]; remove++) {
+        let newConfig = [...boxes];
+        newConfig[i] -= remove;
+        if (winningPatterns.some(p => arraysEqual(p, newConfig))) {
+          box = i;
+          removeCount = remove;
+          moved = true;
+          break;
+        }
+      }
+      if (moved) break;
+    }
+  }
+  playSound("takeSound");
+  boxes[box] = Math.max(0, boxes[box] - removeCount);
+  
+
+  renderBoxes();
+  validateSelection();
+
+  setTimeout(() => {
+    const total = boxes.reduce((a, b) => a + b, 0);
+
+    if (total === 1) {
+      gameOver = true;
+      document.getElementById("aiCommentary").style.display = "none";
+      showloses(2); // You lose
+      return;
+    }
+    if (total === 0) {
+      gameOver = true;
+      document.getElementById("aiCommentary").style.display = "none";
+      showWinner(1);
+      launchFireworks(); // You win
+      return;
+    }
+    updateTurnIndicator();
+    currentPlayer = 1;
+    document.getElementById("takeBtn").style.display = "inline-block";
+    renderBoxes();
+    validateSelection();
+  }, 600);
+}
+function showAICommentary() {
+  const comments = [
+    "Let me think... 🤔",
+    "You won't beat me that easily!",
+    "Interesting choice…",
+    "Aha! Got you now 😏",
+    "Just a warm-up...",
+    "You're playing well... for now!",
+    "Time to flip the game!",
+  ];
+  const comment = comments[Math.floor(Math.random() * comments.length)];
+  const commentBox = document.getElementById("aiCommentary");
+  commentBox.textContent = comment;
+  commentBox.style.display = "block";
+  commentBox.style.opacity = "1";
+
+  setTimeout(() => {
+    commentBox.style.opacity = "0";
+    setTimeout(() => {
+      commentBox.style.display = "none";
+    }, 500); // Wait for fade-out
+  }, 2000); // Visible for 2 seconds
+}
+
+function updateTurnIndicator() {
+  const indicator = document.getElementById("turnIndicator");
+  if (gameOver) {
+    indicator.textContent = "";
+    return;
+  }
+
+  if (mode === "ai") {
+    if (currentPlayer === 1) {
+      indicator.textContent = "🧠 Your Turn!";
+    } else {
+      indicator.textContent = "🤖 Bot is thinking...";
+    }
+  } else {
+    indicator.textContent = currentPlayer === 1 ? "👤 Player 1's Turn" : "👤 Player 2's Turn";
+  }
+}
+
+    function showWinner(player) {
+      let winnerName;
+      if (mode === "ai") {
+        winnerName = "You";
+      } else {
+        winnerName = `Player ${player}`;
+      }
+
+      document.getElementById("winText").innerHTML = `${winnerName} wins!🎉`;
+      document.getElementById("winModal").classList.add("show");
+      playSound("winSound");
+      document.getElementById(`player${player}Icon`).classList.add("winner");
+    }
+
+    function showloses(player) {
+      let winnerName;
+      winnerName = "you";
+      document.getElementById("winText").innerHTML = `${winnerName} Lose!👎🏻`;
+      document.getElementById("winModal").classList.add("show");
+      playSound("loseSound");
+      document.getElementById(`player${player}Icon`).classList.add("winner");
+    }
+
+    function confirmRestart() {
+      playSound("clickSound");
+      if (!gameOver && !confirm("Are you sure you want to restart the game?")) return;
+      restart();
+    }
+    function reestart() {
+      playSound("clickSound");
+      restart();
+    }
+    function launchFireworks() {
+  const duration = 2 * 1000;
+  const animationEnd = Date.now() + duration;
+  const defaults = { startVelocity: 30, spread: 360, ticks: 60, zIndex: 1000 };
+
+  const interval = setInterval(function () {
+    const timeLeft = animationEnd - Date.now();
+
+    if (timeLeft <= 0) {
+      return clearInterval(interval);
+    }
+
+    const particleCount = 50 * (timeLeft / duration);
+    // Fire from the left
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: Math.random() * 0.2, y: Math.random() * 0.5 }
+    });
+    // Fire from the right
+    confetti({
+      ...defaults,
+      particleCount,
+      origin: { x: 1 - Math.random() * 0.2, y: Math.random() * 0.5 }
+    });
+  }, 250);
+}
+    function restart() {
+      boxes = [3, 5, 7];
+      currentPlayer = 1;
+      gameOver = false;
+      hasAnyMoveHappened = false;
+      document.getElementById("winModal").classList.remove("show");
+      document.getElementById("player1Icon").classList.remove("winner");
+      document.getElementById("player2Icon").classList.remove("winner");
+      document.getElementById("modeSelect").style.display = "flex";
+      document.getElementById("difficultySelect").style.display = "none";
+      document.getElementById("game").style.display = "none";
+      document.getElementById("restartBtn").style.display = "none";
+      document.getElementById("icons").style.display = "none";
+      document.getElementById("takeBtn").style.display = "none";
+      document.getElementById("back2Btn").style.display = "none";
+      document.getElementById("backBtn").style.display = "none";
+      document.getElementById("roomSelect").style.display = "none";
+      document.getElementById("logo").style.marginTop = "50px";
+      document.getElementById("logo").style.fontSize = "32px";
+      document.getElementById("line").style.width = "202px";
+      document.getElementById("turnIndicator").textContent = "";
+    }
+  </script>
+  <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
+</body>
+</html>
